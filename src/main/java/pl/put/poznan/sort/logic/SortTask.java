@@ -1,4 +1,4 @@
-package pl.put.poznan.sort.rest;
+package pl.put.poznan.sort.logic;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
