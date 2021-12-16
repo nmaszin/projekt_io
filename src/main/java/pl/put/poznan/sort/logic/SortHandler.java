@@ -1,21 +1,40 @@
 package pl.put.poznan.sort.logic;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import pl.put.poznan.sort.rest.SortTask;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pl.put.poznan.sort.logic.SortTask;
+import pl.put.poznan.sort.rest.SortController;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-/**
- * This is just an example to show that the logic should be outside the REST service.
- */
 public class SortHandler {
-    private List<SortableData> dataTSort;
-    private List<AlgorithmResult> algorithmsResults;
+    private static final Logger logger = LoggerFactory.getLogger(SortController.class);
 
-    public SortHandler(SortTask sortTask){}
-    private List<SortableData> extractDataListFromJson(List<JsonNode> jsonNode){}
-    private void getAlgorithmsList(SortTask task){}
-    public SortResult run(){
-        return new SortResult();
+    private SortTask task;
+    private List<SortableData> dataToSort;
+
+    private List<SortableData> extractDataListFromJson(List<JsonNode> jsonNode) {
+        return jsonNode.stream()
+            .map(SortableData::new)
+            .collect(Collectors.toList());
+    }
+
+    public SortHandler(SortTask task) {
+        this.task = task;
+        this.dataToSort = extractDataListFromJson(task.getData());
+    }
+
+    public SortResult run() {
+        List<AlgorithmResult> algorithmsResults = new ArrayList<>();
+        for (String algorithmName : this.task.getAlgorithms()) {
+            AlgorithmResult result = new AlgorithmResult(
+                algorithmName, this.task.getData(), 0.112);
+            algorithmsResults.add(result);
+        }
+
+        return new SortResult(algorithmsResults);
     }
 }
