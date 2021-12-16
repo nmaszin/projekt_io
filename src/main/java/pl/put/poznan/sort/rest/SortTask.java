@@ -1,48 +1,27 @@
 package pl.put.poznan.sort.rest;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
 import java.util.List;
-import java.util.Optional;
 
 public class SortTask {
-    List<JsonNode> data;
-    String key;
-    Boolean reverse;
-    List<String> algorithmsNames;
-    public SortTask(String jsonString){
+    private List<JsonNode> data;
+    private String key;
+    private Boolean reverse;
+    private List<String> algorithms;
 
-    }
     public List<JsonNode> getData() {
-        return data;
-    }
-
-    public void setData(List<JsonNode> data) {
-        this.data = data;
+        return this.data;
     }
 
     public String getKey() {
         return key;
     }
 
-    public void setKey(String key) {
-        this.key = key;
-    }
-
     public Boolean getReverse() {
         return reverse;
     }
 
-    public void setReverse(Boolean reverse) {
-        this.reverse = reverse;
+    public List<String> getAlgorithms() {
+        return this.algorithms;
     }
-
-    public List<String> getAlgorithmsNames() {
-        return algorithmsNames;
-    }
-
-    public void setAlgorithmsNames(List<String> algorithmsNames) {
-        this.algorithmsNames = algorithmsNames;
-    }
-
 }

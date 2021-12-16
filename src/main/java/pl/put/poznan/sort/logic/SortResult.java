@@ -1,9 +1,15 @@
 package pl.put.poznan.sort.logic;
 
-import pl.put.poznan.sort.logic.AlgorithmResult;
-
 import java.util.List;
 
 public class SortResult {
-    List<AlgorithmResult> resultsList;
+    private final List<AlgorithmResult> results;
+
+    public SortResult(List<AlgorithmResult> results) {
+        this.results = results;
+    }
+
+    public List<AlgorithmResult> getResults() {
+        return this.results;
+    }
 }
