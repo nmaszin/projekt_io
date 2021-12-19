@@ -2,36 +2,33 @@ package pl.put.poznan.sort.logic;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+public class SortableObject implements Comparable<SortableObject> {
+    private final SortableData value;
 
-public class SortableData implements Comparable<SortableData> {
-    protected final JsonNode data;
 
-    public SortableData(JsonNode data) {
-        this.data = data;
-    }
+    public SortableObject(JsonNode object, String key) {
+        if (key == null) {
+            throw new SortableObjectKeyNotExistsException("Key is null");
+        }
 
-    public JsonNode getData() {
-        return this.data;
+        JsonNode node = object.get(key);
+        if (node == null) {
+            throw new SortableObjectKeyNotExistsException(
+                    String.format("Key %s not exists in object", key)
+            );
+        }
+
+        this.value = new SortableData(node, null);
     }
 
     @Override
-    public int compareTo(SortableData other) {
-        if (this.data.isNumber() && other.data.isNumber()) {
-            Double left = this.data.asDouble();
-            Double right = other.data.asDouble();
-            return left.compareTo(right);
-        } else if (this.data.isTextual() && other.data.isTextual()) {
-            String left = this.data.asText();
-            String right = other.data.asText();
-            return left.compareTo(right);
-        } else {
-            throw new SortableDataInvalidDataTypeException("Trying to compare different types");
-        }
+    public int compareTo(SortableObject other) {
+        return this.value.compareTo(other.value);
     }
 }
 
-class SortableDataInvalidDataTypeException extends RuntimeException {
-    public SortableDataInvalidDataTypeException(String message) {
+class SortableObjectKeyNotExistsException extends RuntimeException {
+    public SortableObjectKeyNotExistsException(String message) {
         super(message);
     }
 }
