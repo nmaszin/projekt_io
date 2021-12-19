@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class SortableObject implements Comparable<SortableObject> {
     private final SortableData value;
 
-
     public SortableObject(JsonNode object, String key) {
         if (key == null) {
             throw new SortableObjectKeyNotExistsException("Key is null");
@@ -32,3 +31,4 @@ class SortableObjectKeyNotExistsException extends RuntimeException {
         super(message);
     }
 }
+
