@@ -11,4 +11,4 @@ Dokumentacja API znajduje się [tutaj](./docs/api.md).
 ## Diagram UML
 ![Tutaj powinien pokazać się diagram UML](./docs/IO_UML.drawio.svg)
 
-![example workflow](https://github.com/nmaszin/projekt_io/blob/Paweł%2313-1/.github/workflows/ci.yml/badge.svg )
+![example workflow](https://github.com/nmaszin/projekt_io/actions/workflows/ci.yml/badge.svg?branch=Paweł#13-1)
