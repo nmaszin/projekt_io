@@ -1,6 +1,7 @@
 package pl.put.poznan.sort.logic;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import pl.put.poznan.sort.logic.exceptions.SortableObjectKeyNotExistsException;
 
 public class SortableObject implements Comparable<SortableObject> {
     private final SortableData value;
@@ -13,7 +14,7 @@ public class SortableObject implements Comparable<SortableObject> {
         JsonNode node = object.get(key);
         if (node == null) {
             throw new SortableObjectKeyNotExistsException(
-                    String.format("Key %s not exists in object", key)
+                String.format("Key %s not exists in object", key)
             );
         }
 
@@ -25,10 +26,3 @@ public class SortableObject implements Comparable<SortableObject> {
         return this.value.compareTo(other.value);
     }
 }
-
-class SortableObjectKeyNotExistsException extends RuntimeException {
-    public SortableObjectKeyNotExistsException(String message) {
-        super(message);
-    }
-}
-

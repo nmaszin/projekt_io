@@ -1,6 +1,7 @@
 package pl.put.poznan.sort.logic;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import pl.put.poznan.sort.logic.exceptions.SortableDataInvalidDataTypeException;
 
 public class SortableData implements Comparable<SortableData> {
     protected final JsonNode data;
@@ -26,6 +27,13 @@ public class SortableData implements Comparable<SortableData> {
             String right = other.data.asText();
             return left.compareTo(right);
         } else if (this.data.isObject() && other.data.isObject()) {
+            if (this.key == null) {
+                throw new SortableDataInvalidDataTypeException(
+                    "Trying to sort by property that isn't scalar value "
+                    + "(app doesn't support nested objects at the moment)"
+                );
+            }
+
             SortableObject left = new SortableObject(this.data, this.key);
             SortableObject right = new SortableObject(other.data, this.key);
             return left.compareTo(right);
@@ -34,10 +42,3 @@ public class SortableData implements Comparable<SortableData> {
         }
     }
 }
-
-class SortableDataInvalidDataTypeException extends RuntimeException {
-    public SortableDataInvalidDataTypeException(String message) {
-        super(message);
-    }
-}
-
