@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 public class GnomeSort<T extends  Comparable<T>> extends SortingAlgorithm<T> {
     public GnomeSort(){
-        super("gnome");
+        super("Gnome");
     }
     @Override
     public void sort(List<T> list){
