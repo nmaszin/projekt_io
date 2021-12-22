@@ -1,3 +1,4 @@
+[![Build](https://github.com/nmaszin/projekt_io/actions/workflows/ci.yml/badge.svg)](https://github.com/nmaszin/projekt_io/actions/workflows/ci.yml)
 # SortingMadness
 ## Instrukcja
 Aplikacja działa na porcie 8080. Aby ją uruchomić należy wykonać następującą komendę:
@@ -11,4 +12,3 @@ Dokumentacja API znajduje się [tutaj](./docs/api.md).
 ## Diagram UML
 ![Tutaj powinien pokazać się diagram UML](./docs/IO_UML.drawio.svg)
 
-![Build](https://github.com/nmaszin/projekt_io/actions/workflows/ci.yml/badge.svg)
