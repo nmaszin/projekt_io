@@ -7,6 +7,9 @@ import pl.put.poznan.sort.logic.exceptions.SortableObjectKeyNotExistsException;
  * Wrapper for JSON objects, which make them comparable (and sortable thus)
  */
 public class SortableObject implements Comparable<SortableObject> {
+    /**
+     * Scalar value extracted from object (at key property)
+     */
     private final SortableData value;
 
     /**

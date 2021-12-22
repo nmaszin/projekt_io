@@ -14,9 +14,19 @@ import java.util.stream.Collectors;
  * Integrates application logic into main class, which can be easily used from the controller
  */
 public class SortHandler {
+    /**
+     * Logger instance
+     */
     private static final Logger logger = LoggerFactory.getLogger(SortController.class);
 
+    /**
+     * Task which will be handled while executing run()
+     */
     private final SortTask task;
+
+    /**
+     * List of data to sort
+     */
     private final List<SortableData> dataToSort;
 
     /**
@@ -56,6 +66,7 @@ public class SortHandler {
      * @return Result of the whole task execution
      */
     public SortResult run() {
+        logger.info("Start handling task");
         List<AlgorithmResult> algorithmsResults = new ArrayList<>();
         for (String algorithmName : this.task.getAlgorithms()) {
             List<SortableData> dataCopy = new ArrayList<>(this.dataToSort);
@@ -67,6 +78,7 @@ public class SortHandler {
             algorithmsResults.add(result);
         }
 
+        logger.info("Handling task has ended successfully");
         return new SortResult(algorithmsResults);
     }
 
@@ -77,6 +89,7 @@ public class SortHandler {
      * @return Duration of sorting process in seconds
      */
     public double sortDataWith(String algorithmName, List<SortableData> data) {
+        logger.info("Running algorithm: {}", algorithmName);
         SortingAlgorithm<SortableData> sorter = getAlgorithmByName(algorithmName);
 
         long startTime = System.currentTimeMillis();

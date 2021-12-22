@@ -30,6 +30,8 @@ public abstract class SortingAlgorithm<T extends Comparable<T>> {
         this.name = name;
     }
 
+    /**
+     * Name of the algorithm
+     */
     private final String name;
 }
-

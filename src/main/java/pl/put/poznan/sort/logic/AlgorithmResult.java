@@ -7,8 +7,19 @@ import com.fasterxml.jackson.databind.JsonNode;
  * Representation of task's result for one specific algorithm
  */
 public class AlgorithmResult {
+    /**
+     * Name of the algorithm
+     */
     private final String name;
+
+    /**
+     * Sorted list of data
+     */
     private final List<JsonNode> data;
+
+    /**
+     * Measured algorithm execution duration
+     */
     private final double time;
 
     /**

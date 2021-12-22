@@ -6,6 +6,9 @@ import java.util.List;
  * Result of execution of all sorting algorithms
  */
 public class SortResult {
+    /**
+     * Results of execution of all algorithms
+     */
     private final List<AlgorithmResult> results;
 
     /**

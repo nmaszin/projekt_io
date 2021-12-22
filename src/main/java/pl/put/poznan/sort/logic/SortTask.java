@@ -11,15 +11,30 @@ import java.util.List;
  * It responds to data forwarded in API request
  */
 public class SortTask {
+    /**
+     * Data to sort (supported: integers, floats, text or JSON objects)
+     */
     @NotNull(message = "You have to provide list of data to sort")
     @Size(min = 1, message = "List has to contain at least one element")
     private List<JsonNode> data;
 
+
+    /**
+     * Key for extracting sortable value while sorting JSON objects
+     */
     private String key;
 
+    /**
+     * Value that represents order of sorting (false -> ascending, true -> descending)
+     * It's false by default
+     */
     @Value("false")
     private boolean reverse;
 
+    /**
+     * List of algorithms identifiers
+     * When null, app try to match the best algorithm for task
+     */
     @Size(min = 1, message = "List has to contain at least one element")
     private List<String> algorithms;
 
