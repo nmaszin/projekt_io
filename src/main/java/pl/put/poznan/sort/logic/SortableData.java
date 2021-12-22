@@ -7,8 +7,15 @@ import pl.put.poznan.sort.logic.exceptions.SortableDataInvalidDataTypeException;
  * Wrapper for JSON data, which makes them comparable (and sortable thus)
  */
 public class SortableData implements Comparable<SortableData> {
+    /**
+     * Parsed JSON which is representation of data user would like to sort
+     */
     protected final JsonNode data;
-    private final String key;
+
+    /**
+     * Key which will be used to extract scalar value from data if data is an JSON object
+     */
+    protected final String key;
 
     /**
      * Creates an instance of SortableData class
