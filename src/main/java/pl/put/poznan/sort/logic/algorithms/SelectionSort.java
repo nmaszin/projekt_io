@@ -19,3 +19,4 @@ public class SelectionSort<T extends  Comparable<T>> extends SortingAlgorithm<T>
         }
     }
 }
+
