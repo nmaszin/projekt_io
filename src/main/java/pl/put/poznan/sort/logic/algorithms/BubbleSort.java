@@ -3,6 +3,10 @@ package pl.put.poznan.sort.logic.algorithms;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Class that implements bubble sort algorithm
+ * @param <T> Type of data which user would like to sort
+ */
 public class BubbleSort<T extends Comparable<T>> extends SortingAlgorithm<T> {
     public BubbleSort() {
         super("bubble");

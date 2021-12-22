@@ -3,9 +3,17 @@ package pl.put.poznan.sort.logic;
 import com.fasterxml.jackson.databind.JsonNode;
 import pl.put.poznan.sort.logic.exceptions.SortableObjectKeyNotExistsException;
 
+/**
+ * Wrapper for JSON objects, which make them comparable (and sortable thus)
+ */
 public class SortableObject implements Comparable<SortableObject> {
     private final SortableData value;
 
+    /**
+     * Creates an instance of SortableData class
+     * @param object JSON object as parsed JSON tree
+     * @param key Key which will be used to extract a scalar value from object
+     */
     public SortableObject(JsonNode object, String key) {
         if (key == null) {
             throw new SortableObjectKeyNotExistsException("Key is null");
