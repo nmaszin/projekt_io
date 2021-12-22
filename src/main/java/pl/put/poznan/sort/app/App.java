@@ -8,6 +8,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication(scanBasePackages = {"pl.put.poznan.sort.rest"})
 public class App {
+    /**
+     * Main method of Spring application
+     * @param args Call arguments
+     */
     public static void main(String[] args) {
         SpringApplication.run(App.class, args);
     }
