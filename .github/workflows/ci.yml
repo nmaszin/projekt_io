@@ -3,9 +3,7 @@
 
 name: Java CI with Maven
 
-on:
-  push:
-    branches: [ Paweł#13 ]
+on: [ push ]
 jobs:
   build:
 
