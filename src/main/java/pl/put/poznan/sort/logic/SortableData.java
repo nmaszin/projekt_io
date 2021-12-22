@@ -3,15 +3,27 @@ package pl.put.poznan.sort.logic;
 import com.fasterxml.jackson.databind.JsonNode;
 import pl.put.poznan.sort.logic.exceptions.SortableDataInvalidDataTypeException;
 
+/**
+ * Wrapper for JSON data, which makes them comparable (and sortable thus)
+ */
 public class SortableData implements Comparable<SortableData> {
     protected final JsonNode data;
     private final String key;
 
+    /**
+     * Creates an instance of SortableData class
+     * @param data Data as parsed JSON tree
+     * @param key Key which will be used to extract a scalar value if data is an JSON object
+     */
     public SortableData(JsonNode data, String key) {
         this.data = data;
         this.key = key;
     }
 
+    /**
+     * Returns the name of the algorithm
+     * @return The name of the algorithm
+     */
     public JsonNode getData() {
         return this.data;
     }

@@ -3,6 +3,10 @@ package pl.put.poznan.sort.logic.algorithms;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Class that implements quick sort algorithm
+ * @param <T> Type of data which user would like to sort
+ */
 public class QuickSort<T extends Comparable<T>> extends SortingAlgorithm<T> {
     public QuickSort() {
         super("quick");

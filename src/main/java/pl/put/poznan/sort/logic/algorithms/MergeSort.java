@@ -3,6 +3,10 @@ package pl.put.poznan.sort.logic.algorithms;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class that implements merge sort algorithm
+ * @param <T> Type of data which user would like to sort
+ */
 public class MergeSort<T extends Comparable<T>> extends SortingAlgorithm<T> {
     public MergeSort() {
         super("merge");

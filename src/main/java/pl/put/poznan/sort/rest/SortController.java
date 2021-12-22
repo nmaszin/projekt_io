@@ -9,11 +9,19 @@ import pl.put.poznan.sort.logic.SortTask;
 
 import javax.validation.Valid;
 
+/**
+ * Main app controller
+ */
 @RestController
 @RequestMapping("/sort")
 public class SortController {
     private static final Logger logger = LoggerFactory.getLogger(SortController.class);
 
+    /**
+     * Controller method which handles user sorting requests
+     * @param task User's task which was sent in the request
+     * @return App response
+     */
     @PostMapping
     @ResponseBody
     public SortResult post(@Valid @RequestBody SortTask task) {
