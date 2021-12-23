@@ -3,10 +3,12 @@ package pl.put.poznan.sort.logic;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.util.ArrayUtils;
 import pl.put.poznan.sort.logic.algorithms.*;
 import pl.put.poznan.sort.rest.SortController;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,7 +72,12 @@ public class SortHandler {
         List<AlgorithmResult> algorithmsResults = new ArrayList<>();
         for (String algorithmName : this.task.getAlgorithms()) {
             List<SortableData> dataCopy = new ArrayList<>(this.dataToSort);
+
             double time = sortDataWith(algorithmName, dataCopy);
+            if (this.task.getReverse()) {
+                Collections.reverse(dataCopy);
+            }
+
             List<JsonNode> sortedDataAsJson = extractJsonListFromSortableData(dataCopy);
             AlgorithmResult result = new AlgorithmResult(
                     algorithmName, sortedDataAsJson, time);
