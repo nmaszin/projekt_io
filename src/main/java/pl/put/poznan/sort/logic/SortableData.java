@@ -48,8 +48,8 @@ public class SortableData implements Comparable<SortableData> {
         } else if (this.data.isObject() && other.data.isObject()) {
             if (this.key == null) {
                 throw new SortableDataInvalidDataTypeException(
-                    "Trying to sort by property that isn't scalar value "
-                    + "(app doesn't support nested objects at the moment)"
+                    "Trying to sort by property that isn't scalar value " +
+                    "(probably you should add another key part after dot)"
                 );
             }
 
