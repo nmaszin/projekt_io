@@ -19,7 +19,7 @@ public class GnomeSort<T extends  Comparable<T>> extends SortingAlgorithm<T> {
             if (id == 0) {
                 id++;
             }
-            if (list.get(id).compareTo(list.get(id - 1)) > 0) {
+            if (list.get(id).compareTo(list.get(id - 1)) >= 0) {
                 id++;
             } else {
                 Collections.swap(list, id - 1, id);
