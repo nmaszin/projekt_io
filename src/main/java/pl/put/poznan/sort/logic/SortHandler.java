@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.put.poznan.sort.logic.algorithms.*;
+import pl.put.poznan.sort.logic.threads.SortThread;
 import pl.put.poznan.sort.rest.SortController;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,13 +70,26 @@ public class SortHandler {
     public SortResult run() {
         logger.info("Start handling task");
         List<AlgorithmResult> algorithmsResults = new ArrayList<>();
+        List<SortThread> algorithmsThreads=new LinkedList<>();
+        //Start all the algorithms
         for (String algorithmName : this.task.getAlgorithms()) {
             List<SortableData> dataCopy = new ArrayList<>(this.dataToSort);
-            double time = sortDataWith(algorithmName, dataCopy);
-            List<JsonNode> sortedDataAsJson = extractJsonListFromSortableData(dataCopy);
-            AlgorithmResult result = new AlgorithmResult(
-                    algorithmName, sortedDataAsJson, time);
+            SortThread algorithmThread = new SortThread(this::sortDataWith, algorithmName, dataCopy);
+            algorithmThread.start();
+            algorithmsThreads.add(algorithmThread);
+        }
 
+        //Wait for algorithms' results
+        for (SortThread algThread  : algorithmsThreads){
+            try {
+                algThread.join();
+            }catch (InterruptedException e){logger.info("Algorithm execution interrupted");};
+            List<SortableData> sortedData=algThread.getData();
+            double time = algThread.getTime();
+            //Save results
+            List<JsonNode> sortedDataAsJson = extractJsonListFromSortableData(sortedData);
+            AlgorithmResult result = new AlgorithmResult(
+                    algThread.getAlgorithmName(), sortedDataAsJson, time);
             algorithmsResults.add(result);
         }
 
