@@ -1,16 +1,19 @@
 package pl.put.poznan.sort.logic;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.put.poznan.sort.logic.algorithms.*;
-import pl.put.poznan.sort.logic.threads.SortThread;
+import pl.put.poznan.sort.logic.exceptions.SortHandlerUnsupportedAlgorithmException;
 import pl.put.poznan.sort.rest.SortController;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
+import pl.put.poznan.sort.logic.threads.SortThread;
 
 /**
  * Integrates application logic into main class, which can be easily used from the controller
@@ -20,6 +23,28 @@ public class SortHandler {
      * Logger instance
      */
     private static final Logger logger = LoggerFactory.getLogger(SortController.class);
+
+    /**
+     * List of supported algorithms
+     */
+    private static final List<SortingAlgorithm<SortableData>> supportedAlgorithms = List.of(
+            new BubbleSort<>(),
+            new GnomeSort<>(),
+            new InsertionSort<>(),
+            new MergeSort<>(),
+            new QuickSort<>(),
+            new SelectionSort<>()
+    );
+
+    /**
+     * Identifier (name) to algorithm mapping
+     */
+    private static final Map<String, SortingAlgorithm<SortableData>> algorithmsMapping =
+        supportedAlgorithms.stream()
+            .collect(Collectors.toMap(
+                SortingAlgorithm<SortableData>::getName,
+                Function.identity()
+            ));
 
     /**
      * Task which will be handled while executing run()
@@ -32,27 +57,7 @@ public class SortHandler {
     private final List<SortableData> dataToSort;
 
     /**
-     * Converts list of parsed JSON objects into list of SortableData
-     * @param jsonList List of parsed JSON objects
-     * @param key Key given by user in the task
-     * @return List of SortableData
-     */
-    private List<SortableData> extractDataListFromJson(List<JsonNode> jsonList, String key) {
-        return jsonList.stream()
-            .map(e -> new SortableData(e, key))
-            .collect(Collectors.toList());
-    }
-
-    /**
-     * Converts the sorted list of SortableData into list of JSON objects
-     * @param sortableData List of sorted data
-     * @return List of JSON objects
-     */
-    private List<JsonNode> extractJsonListFromSortableData(List<SortableData> sortableData) {
-        return sortableData.stream()
-            .map(SortableData::getData)
-            .collect(Collectors.toList());
-    }
+    private final HashMap<String, SortingAlgorithm<SortableData>> algorithmsMapping;
 
     /**
      * Initializes sort handler with user's task
@@ -80,13 +85,20 @@ public class SortHandler {
         }
 
         //Wait for algorithms' results
-        for (SortThread algThread  : algorithmsThreads){
+        for (SortThread algThread  : algorithmsThreads) {
             try {
                 algThread.join();
-            }catch (InterruptedException e){logger.info("Algorithm execution interrupted");};
-            List<SortableData> sortedData=algThread.getData();
+            } catch (InterruptedException e) {
+                logger.info("Algorithm execution interrupted");
+            };
+
             double time = algThread.getTime();
-            //Save results
+            List<SortableData> sortedData = algThread.getData();
+            if (this.task.getReverse()) {
+                Collections.reverse(sortedData);
+            }
+
+            // Save results
             List<JsonNode> sortedDataAsJson = extractJsonListFromSortableData(sortedData);
             AlgorithmResult result = new AlgorithmResult(
                     algThread.getAlgorithmName(), sortedDataAsJson, time);
@@ -98,12 +110,35 @@ public class SortHandler {
     }
 
     /**
+     * Converts list of parsed JSON objects into list of SortableData
+     * @param jsonList List of parsed JSON objects
+     * @param key Key given by user in the task
+     * @return List of SortableData
+     */
+    protected List<SortableData> extractDataListFromJson(List<JsonNode> jsonList, String key) {
+        return jsonList.stream()
+            .map(e -> new SortableData(e, key))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Converts the sorted list of SortableData into list of JSON objects
+     * @param sortableData List of sorted data
+     * @return List of JSON objects
+     */
+    protected List<JsonNode> extractJsonListFromSortableData(List<SortableData> sortableData) {
+        return sortableData.stream()
+            .map(SortableData::getData)
+            .collect(Collectors.toList());
+    }
+
+    /**
      * Sorts list of SortableData with the specific algorithm
      * @param algorithmName Name of the algorithm which will be sorted
      * @param data List of data which will be sorted in-place
      * @return Duration of sorting process in seconds
      */
-    public double sortDataWith(String algorithmName, List<SortableData> data) {
+    protected double sortDataWith(String algorithmName, List<SortableData> data) {
         logger.info("Running algorithm: {}", algorithmName);
         SortingAlgorithm<SortableData> sorter = getAlgorithmByName(algorithmName);
 
@@ -118,17 +153,15 @@ public class SortHandler {
      * @param name Name of algorithm
      * @return The sorter
      */
-    private SortingAlgorithm<SortableData> getAlgorithmByName(String name) {
-        switch (name) {
-            case "bubble": return new BubbleSort<>();
-            case "gnome": return new GnomeSort<>();
-            case "insertion": return new InsertionSort<>();
-            case "merge": return new MergeSort<>();
-            case "quick": return new QuickSort<>();
-            case "selection": return new SelectionSort<>();
-            default: return new QuickSort<>();
+    protected SortingAlgorithm<SortableData> getAlgorithmByName(String name) {
+        SortingAlgorithm<SortableData> sorter = algorithmsMapping.get(name);
+
+        if (sorter == null) {
+            throw new SortHandlerUnsupportedAlgorithmException(
+                String.format("Unsupported algorithm: %s", name)
+            );
         }
+
+        return sorter;
     }
 }
-
-

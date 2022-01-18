@@ -1,8 +1,12 @@
 package pl.put.poznan.sort.logic;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import pl.put.poznan.sort.rest.SortController;
 
+import javax.annotation.PostConstruct;
 import javax.validation.constraints.*;
 import java.util.List;
 
@@ -36,7 +40,7 @@ public class SortTask {
      * When null, app try to match the best algorithm for task
      */
     @Size(min = 1, message = "List has to contain at least one element")
-    private List<String> algorithms;
+    private List<String> algorithms = List.of("quick");
 
     /**
      * Returns list of data as list of parsed JSON tree
@@ -70,5 +74,15 @@ public class SortTask {
      */
     public List<String> getAlgorithms() {
         return this.algorithms;
+    }
+
+
+    private static final Logger logger = LoggerFactory.getLogger(SortController.class);
+
+    @PostConstruct
+    private void setDefaultAlgorithmIfNecessary() {
+        if (this.algorithms == null) {
+            this.algorithms = List.of("quick");
+        }
     }
 }
