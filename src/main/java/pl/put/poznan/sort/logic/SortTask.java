@@ -81,7 +81,6 @@ public class SortTask {
 
     @PostConstruct
     private void setDefaultAlgorithmIfNecessary() {
-        logger.debug("Siema");
         if (this.algorithms == null) {
             this.algorithms = List.of("quick");
         }

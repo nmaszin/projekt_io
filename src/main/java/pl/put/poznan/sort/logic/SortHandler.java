@@ -1,18 +1,19 @@
 package pl.put.poznan.sort.logic;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.put.poznan.sort.logic.algorithms.*;
 import pl.put.poznan.sort.logic.exceptions.SortHandlerUnsupportedAlgorithmException;
 import pl.put.poznan.sort.rest.SortController;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import pl.put.poznan.sort.logic.threads.SortThread;
 
 /**
  * Integrates application logic into main class, which can be easily used from the controller
@@ -74,18 +75,34 @@ public class SortHandler {
     public SortResult run() {
         logger.info("Start handling task");
         List<AlgorithmResult> algorithmsResults = new ArrayList<>();
+        List<SortThread> algorithmsThreads=new LinkedList<>();
+        //Start all the algorithms
         for (String algorithmName : this.task.getAlgorithms()) {
             List<SortableData> dataCopy = new ArrayList<>(this.dataToSort);
+            SortThread algorithmThread = new SortThread(this::sortDataWith, algorithmName, dataCopy);
+            algorithmThread.start();
+            algorithmsThreads.add(algorithmThread);
+        }
 
-            double time = sortDataWith(algorithmName, dataCopy);
+        //Wait for algorithms' results
+        for (SortThread algThread  : algorithmsThreads) {
+            try {
+                algThread.join();
+            } catch (InterruptedException e) {
+                logger.info("Algorithm execution interrupted");
+            };
+
+            double time = algThread.getTime();
+            List<SortableData> sortedData = algThread.getData();
             if (this.task.getReverse()) {
-                Collections.reverse(dataCopy);
+                Collections.reverse(sortedData);
             }
 
-            List<JsonNode> sortedDataAsJson = extractJsonListFromSortableData(dataCopy);
-            algorithmsResults.add(new AlgorithmResult(
-                algorithmName, sortedDataAsJson, time
-            ));
+            // Save results
+            List<JsonNode> sortedDataAsJson = extractJsonListFromSortableData(sortedData);
+            AlgorithmResult result = new AlgorithmResult(
+                    algThread.getAlgorithmName(), sortedDataAsJson, time);
+            algorithmsResults.add(result);
         }
 
         logger.info("Handling task has ended successfully");
