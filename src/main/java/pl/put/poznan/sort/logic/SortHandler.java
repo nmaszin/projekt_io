@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -12,8 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.put.poznan.sort.logic.algorithms.*;
 import pl.put.poznan.sort.logic.exceptions.SortHandlerUnsupportedAlgorithmException;
+import pl.put.poznan.sort.logic.threads.SortExecutor;
 import pl.put.poznan.sort.rest.SortController;
-import pl.put.poznan.sort.logic.threads.SortThread;
 
 /**
  * Integrates application logic into main class, which can be easily used from the controller
@@ -74,35 +75,29 @@ public class SortHandler {
      */
     public SortResult run() {
         logger.info("Start handling task");
-        List<AlgorithmResult> algorithmsResults = new ArrayList<>();
-        List<SortThread> algorithmsThreads=new LinkedList<>();
-        //Start all the algorithms
+        ExecutorService es = Executors.newScheduledThreadPool(4);
+        List<Callable<AlgorithmResult>> todo = new ArrayList<Callable<AlgorithmResult>>();
+
+        // Start all the algorithms
         for (String algorithmName : this.task.getAlgorithms()) {
+            logger.info("Running algorithm: {}", algorithmName);
             List<SortableData> dataCopy = new ArrayList<>(this.dataToSort);
-            SortThread algorithmThread = new SortThread(this::sortDataWith, algorithmName, dataCopy);
-            algorithmThread.start();
-            algorithmsThreads.add(algorithmThread);
+
+            todo.add(new SortExecutor(
+                algorithmName,
+                getAlgorithmByName(algorithmName),
+                dataCopy,
+                this.task.getReverse()
+            ));
         }
 
-        //Wait for algorithms' results
-        for (SortThread algThread  : algorithmsThreads) {
-            try {
-                algThread.join();
-            } catch (InterruptedException e) {
-                logger.info("Algorithm execution interrupted");
-            };
-
-            double time = algThread.getTime();
-            List<SortableData> sortedData = algThread.getData();
-            if (this.task.getReverse()) {
-                Collections.reverse(sortedData);
+        List<AlgorithmResult> algorithmsResults = new ArrayList<>();
+        try {
+            for (Future<AlgorithmResult> f : es.invokeAll(todo)) {
+                algorithmsResults.add(f.get());
             }
-
-            // Save results
-            List<JsonNode> sortedDataAsJson = extractJsonListFromSortableData(sortedData);
-            AlgorithmResult result = new AlgorithmResult(
-                    algThread.getAlgorithmName(), sortedDataAsJson, time);
-            algorithmsResults.add(result);
+        } catch (ExecutionException | InterruptedException e) {
+            throw (RuntimeException) e.getCause();
         }
 
         logger.info("Handling task has ended successfully");
@@ -119,33 +114,6 @@ public class SortHandler {
         return jsonList.stream()
             .map(e -> new SortableData(e, key))
             .collect(Collectors.toList());
-    }
-
-    /**
-     * Converts the sorted list of SortableData into list of JSON objects
-     * @param sortableData List of sorted data
-     * @return List of JSON objects
-     */
-    protected List<JsonNode> extractJsonListFromSortableData(List<SortableData> sortableData) {
-        return sortableData.stream()
-            .map(SortableData::getData)
-            .collect(Collectors.toList());
-    }
-
-    /**
-     * Sorts list of SortableData with the specific algorithm
-     * @param algorithmName Name of the algorithm which will be sorted
-     * @param data List of data which will be sorted in-place
-     * @return Duration of sorting process in seconds
-     */
-    protected double sortDataWith(String algorithmName, List<SortableData> data) {
-        logger.info("Running algorithm: {}", algorithmName);
-        SortingAlgorithm<SortableData> sorter = getAlgorithmByName(algorithmName);
-
-        long startTime = System.currentTimeMillis();
-        sorter.sort(data);
-        long endTime = System.currentTimeMillis();
-        return ((double)endTime - startTime) / 1000;
     }
 
     /**
