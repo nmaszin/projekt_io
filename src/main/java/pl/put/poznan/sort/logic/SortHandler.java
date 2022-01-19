@@ -76,7 +76,7 @@ public class SortHandler {
     public SortResult run() {
         logger.info("Start handling task");
         ExecutorService es = Executors.newScheduledThreadPool(4);
-        List<Callable<AlgorithmResult>> todo = new ArrayList<Callable<AlgorithmResult>>();
+        List<Callable<AlgorithmResult>> todo = new ArrayList<>();
 
         // Start all the algorithms
         for (String algorithmName : this.task.getAlgorithms()) {

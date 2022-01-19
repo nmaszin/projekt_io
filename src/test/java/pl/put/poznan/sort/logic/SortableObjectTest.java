@@ -39,38 +39,34 @@ public class SortableObjectTest {
     }
 
     @Test
-    void SortableObjectTest() {
-        SortableObject So = new SortableObject(SimpleTestNode, "a");
-    }
-
-    @Test
     void NullKeyTest() {
-        SortableObjectKeyNotExistsException thrown = Assertions.assertThrows(
+        Assertions.assertThrows(
 			SortableObjectKeyNotExistsException.class,
             ()-> {
 				SortableObject So = new SortableObject(SimpleTestNode, null);
 			},
 			"good"
 		);
-        assertEquals(pl.put.poznan.sort.logic.exceptions.SortableObjectKeyNotExistsException.class, SortableObjectKeyNotExistsException.class);
     }
 
     @Test
     void KeyNotExistTest() {
-        SortableObjectKeyNotExistsException thrown = Assertions.assertThrows(
+        Assertions.assertThrows(
 			SortableObjectKeyNotExistsException.class,
         	() -> {
 				SortableObject So = new SortableObject(CompositeTestNode, "d");
 			},
 			"good"
 		);
-
-        assertEquals(pl.put.poznan.sort.logic.exceptions.SortableObjectKeyNotExistsException.class, SortableObjectKeyNotExistsException.class);
     }
 
     @Test
     void CompositeKeyTest() {
-        SortableObject Soa = new SortableObject(CompositeTestNode, "a.b");
+        Assertions.assertDoesNotThrow(
+            () -> {
+                SortableObject Soa = new SortableObject(CompositeTestNode, "a.b");
+            }
+        );
     }
 }
 
